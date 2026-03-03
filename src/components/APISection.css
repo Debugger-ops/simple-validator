@@ -1,0 +1,32 @@
+.api-section {
+  padding: 5rem 1.5rem;
+  background-color: hsl(var(--muted) / 0.3);
+}
+
+.api-section__container {
+  max-width: 56rem; /* 4xl = 896px */
+  margin: 0 auto;
+}
+
+.api-section__heading {
+  font-size: clamp(1.875rem, 4vw, 2.25rem); /* text-3xl to text-4xl */
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.api-section__heading-accent {
+  color: hsl(var(--primary));
+}
+
+.api-section__subheading {
+  color: hsl(var(--muted-foreground));
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.api-section__examples {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}

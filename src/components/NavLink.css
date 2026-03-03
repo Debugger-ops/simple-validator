@@ -1,0 +1,21 @@
+.nav-link {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+  color: hsl(var(--primary));
+}
+
+.nav-link--active {
+  color: hsl(var(--primary));
+  font-weight: 600;
+}
+
+.nav-link--pending {
+  opacity: 0.5;
+  pointer-events: none;
+}

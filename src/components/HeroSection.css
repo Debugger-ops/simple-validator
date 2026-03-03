@@ -1,0 +1,102 @@
+.hero {
+  position: relative;
+  padding: 6rem 1.5rem;
+  overflow: hidden;
+}
+
+/* Glow effect */
+.hero__glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 400px;
+  border-radius: 9999px;
+  background-color: hsl(var(--primary) / 0.05);
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+.hero__container {
+  max-width: 56rem;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Badge */
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--primary) / 0.2);
+  background-color: hsl(var(--primary) / 0.05);
+  margin-bottom: 2rem;
+}
+
+.hero__badge-icon {
+  width: 1rem;
+  height: 1rem;
+  color: hsl(var(--primary));
+}
+
+.hero__badge-text {
+  font-size: 0.875rem;
+  font-family: monospace;
+  color: hsl(var(--primary));
+}
+
+/* Heading */
+.hero__heading {
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+}
+
+.hero__heading-default {
+  color: hsl(var(--foreground));
+}
+
+.hero__heading-accent {
+  color: hsl(var(--primary));
+}
+
+/* Subheading */
+.hero__subheading {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: hsl(var(--muted-foreground));
+  max-width: 42rem;
+  margin: 0 auto 3rem;
+  line-height: 1.75;
+}
+
+/* Install command */
+.hero__install {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.hero__install-dollar {
+  color: hsl(var(--muted-foreground));
+}
+
+.hero__install-cmd {
+  color: hsl(var(--foreground));
+}
+
+.hero__install-pkg {
+  color: hsl(var(--primary));
+}
