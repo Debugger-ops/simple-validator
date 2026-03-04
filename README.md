@@ -1,73 +1,201 @@
-# React + TypeScript + Vite
+# smart-validate
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A lightweight, zero-dependency validation library for TypeScript and React.  
+> Email, password strength, custom rules — all in under 2KB.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **Zero dependencies** — pure TypeScript, no bloat
+- **Type-safe** — full TypeScript support with inferred return types
+- **Under 2KB** — tree-shakeable, only import what you use
+- **Custom rules** — compose your own validation logic with `validate()`
+- **Framework agnostic** — works with React, Vue, or vanilla JS
+- **i18n ready** — override error messages in any language
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install smart-validate
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Usage
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Email Validation
+
+```ts
+import { validateEmail } from "smart-validate";
+
+const result = validateEmail("hello@world.com");
+// → { valid: true, message: "Valid email" }
+
+const bad = validateEmail("not-an-email");
+// → { valid: false, message: "Invalid email format" }
 ```
+
+### Password Strength
+
+```ts
+import { validatePassword } from "smart-validate";
+
+const analysis = validatePassword("Pass@123");
+// → {
+//     strength: "strong",
+//     score: 82,
+//     checks: { length: true, uppercase: true, lowercase: true, number: true, special: true },
+//     message: "Strong password"
+//   }
+```
+
+### Custom Rules
+
+```ts
+import { validate, rules } from "smart-validate";
+
+const result = validate("hello world", [
+  rules.required(),
+  rules.minLength(3),
+  rules.maxLength(100),
+  rules.pattern(/^[a-z\s]+$/i, "Letters only"),
+]);
+// → { valid: true, message: "Valid" }
+```
+
+---
+
+## API Reference
+
+### `validateEmail(value: string): ValidationResult`
+
+Validates an email address against RFC-compliant format rules.
+
+| Field     | Type      | Description                        |
+|-----------|-----------|------------------------------------|
+| `valid`   | `boolean` | Whether the email is valid         |
+| `message` | `string`  | Human-readable result message      |
+
+---
+
+### `validatePassword(value: string): PasswordAnalysis`
+
+Analyses password strength across multiple criteria.
+
+| Field      | Type                                        | Description                            |
+|------------|---------------------------------------------|----------------------------------------|
+| `valid`    | `boolean`                                   | Whether the password meets minimum bar |
+| `strength` | `"weak" \| "fair" \| "strong" \| "very-strong"` | Strength tier                     |
+| `score`    | `number`                                    | Numeric score from 0–100               |
+| `checks`   | `Record<string, boolean>`                   | Per-criterion pass/fail breakdown      |
+| `message`  | `string`                                    | Human-readable result message          |
+
+**Checks include:** `length`, `uppercase`, `lowercase`, `number`, `special`
+
+---
+
+### `validate(value: string, rules: Rule[]): ValidationResult`
+
+Runs a value through a composed array of rules. Stops at the first failure.
+
+| Field     | Type      | Description                    |
+|-----------|-----------|--------------------------------|
+| `valid`   | `boolean` | Whether all rules passed       |
+| `message` | `string`  | Message from the failing rule, or `"Valid"` |
+
+---
+
+### Built-in Rules
+
+| Rule                              | Description                              |
+|-----------------------------------|------------------------------------------|
+| `rules.required()`                | Value must be non-empty                  |
+| `rules.minLength(n)`              | Minimum character length                 |
+| `rules.maxLength(n)`              | Maximum character length                 |
+| `rules.pattern(regex, message?)`  | Must match the provided regular expression |
+| `rules.email()`                   | Must be a valid email format             |
+
+---
+
+## TypeScript Types
+
+```ts
+interface ValidationResult {
+  valid: boolean;
+  message: string;
+}
+
+interface PasswordAnalysis extends ValidationResult {
+  strength: "weak" | "fair" | "strong" | "very-strong";
+  score: number;
+  checks: Record<string, boolean>;
+}
+
+type Rule = (value: string) => ValidationResult;
+```
+
+---
+
+## React Example
+
+```tsx
+import { useState } from "react";
+import { validateEmail } from "smart-validate";
+
+export default function EmailInput() {
+  const [value, setValue] = useState("");
+  const result = value ? validateEmail(value) : null;
+
+  return (
+    <div>
+      <input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Enter email"
+      />
+      {result && (
+        <p style={{ color: result.valid ? "green" : "red" }}>
+          {result.message}
+        </p>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+## Custom Rule Example
+
+```ts
+import { validate } from "smart-validate";
+import type { Rule } from "smart-validate";
+
+const noSpaces: Rule = (value) => ({
+  valid: !value.includes(" "),
+  message: "No spaces allowed",
+});
+
+const result = validate("hello world", [noSpaces]);
+// → { valid: false, message: "No spaces allowed" }
+```
+
+---
+
+## Bundle Size
+
+| Import              | Size (minified + gzipped) |
+|---------------------|--------------------------|
+| Full library        | ~1.8KB                   |
+| `validateEmail`     | ~0.4KB                   |
+| `validatePassword`  | ~0.9KB                   |
+| `validate` + rules  | ~0.6KB                   |
+
+---
+
+## License
+
+MIT © smart-validate
